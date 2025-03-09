@@ -12,10 +12,9 @@ interface TeamMember {
 export default function TeamMembers() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newMember, setNewMember] = useState({ name: '' });
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [newMemberName, setNewMemberName] = useState('');
 
   const fetchTeamMembers = async () => {
     try {
@@ -46,7 +45,7 @@ export default function TeamMembers() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...newMember, status: 'active' }),
+        body: JSON.stringify({ name: newMemberName, status: 'active' }),
       });
 
       const data = await response.json();
@@ -57,7 +56,7 @@ export default function TeamMembers() {
       }
 
       setTeamMembers(prev => [...prev, data]);
-      setNewMember({ name: '' });
+      setNewMemberName('');
       setShowAddForm(false);
       setError('');
     } catch (err) {
@@ -176,8 +175,8 @@ export default function TeamMembers() {
           <div className="flex gap-2">
             <input
               type="text"
-              value={newMember.name}
-              onChange={(e) => setNewMember({ name: e.target.value })}
+              value={newMemberName}
+              onChange={(e) => setNewMemberName(e.target.value)}
               placeholder="Enter member name"
               className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
@@ -193,7 +192,7 @@ export default function TeamMembers() {
               type="button"
               onClick={() => {
                 setShowAddForm(false);
-                setNewMember({ name: '' });
+                setNewMemberName('');
               }}
               className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
             >

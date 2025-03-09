@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 import type { Map as LeafletMap } from 'leaflet';
+import type { Icon } from 'leaflet';
 
 interface TeamMember {
   id: string;
@@ -34,27 +35,30 @@ const Popup = dynamic(
 
 export default function MapGame() {
   const [isMounted, setIsMounted] = useState(false);
-  const [icon, setIcon] = useState<any>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [pickedMembers, setPickedMembers] = useState<TeamMember[]>([]);
   const [currentPick, setCurrentPick] = useState<TeamMember | null>(null);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const mapRef = useRef<LeafletMap | null>(null);
+  const [defaultIcon, setDefaultIcon] = useState<Icon | null>(null);
 
   useEffect(() => {
     // Initialize Leaflet only on client side
-    import('leaflet').then(L => {
-      const customIcon = L.icon({
-        iconUrl: '/pin.png',
-        iconSize: [30, 30], // Width and height of the icon
-        iconAnchor: [15, 30], // Point of the icon which will correspond to marker's location
-        popupAnchor: [0, -30] // Point from which the popup should open relative to the iconAnchor
+    import('leaflet').then((L) => {
+      const icon = L.icon({
+        iconUrl: '/marker-icon-2x.png',
+        iconRetinaUrl: '/marker-icon-2x.png',
+        iconSize: [40, 40],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
       });
-      setIcon(customIcon);
+      setDefaultIcon(icon);
+      L.Marker.prototype.setIcon(icon);
+      setIsMounted(true);
     });
 
-    setIsMounted(true);
     fetchTeamMembers();
   }, []);
 
@@ -161,7 +165,7 @@ export default function MapGame() {
     setError('');
   };
 
-  if (!isMounted) {
+  if (!isMounted || !defaultIcon) {
     return (
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-2xl font-bold mb-6">Map Game - answer what you gonna do there</h2>
@@ -241,7 +245,7 @@ export default function MapGame() {
               <Marker 
                 key={member.id} 
                 position={member.coordinates}
-                icon={icon}
+                icon={defaultIcon}
               >
                 <Popup>
                   <div className="font-medium">

@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing credentials");
         }
@@ -85,18 +85,11 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (!session.user) {
-        session.user = {
-          id: '',
-          email: '',
-          username: ''
-        };
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.username = token.username;
       }
-      
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.username = token.username;
-
       return session;
     }
   },

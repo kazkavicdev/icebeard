@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface TeamMember {
   id: string;
@@ -98,13 +98,11 @@ export default function EmojiGame() {
     }
   };
 
-  // Fetch team members when component mounts
-  useState(() => {
+  useEffect(() => {
     fetchTeamMembers();
-  });
+  }, []);
 
   const getRandomEmojis = () => {
-    // Get all emoji set keys and pick one randomly
     const sets = Object.keys(EMOJI_SETS) as (keyof typeof EMOJI_SETS)[];
     const randomSet = sets[Math.floor(Math.random() * sets.length)];
     const emojiSet = EMOJI_SETS[randomSet];
@@ -112,7 +110,7 @@ export default function EmojiGame() {
     const shuffled = [...emojiSet.emojis].sort(() => 0.5 - Math.random());
     return {
       question: emojiSet.question,
-      emojis: shuffled.slice(0, 6) // Get 6 random emojis
+      emojis: shuffled.slice(0, 6)
     };
   };
 
@@ -142,60 +140,6 @@ export default function EmojiGame() {
     setCurrentPick(null);
     setCurrentEmojis(null);
     setError('');
-  };
-
-  const handleDeleteMember = async (id: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/team/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) throw new Error('Failed to delete team member');
-      
-      // Remove member from state
-      setTeamMembers(prev => prev.filter(member => member.id !== id));
-      // Remove from picked members if present
-      setPickedMembers(prev => prev.filter(member => member.id !== id));
-      // Clear current pick if it was the deleted member
-      if (currentPick?.id === id) {
-        setCurrentPick(null);
-        setCurrentEmojis(null);
-      }
-      setError('');
-    } catch (err) {
-      setError('Failed to delete team member');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteAllMembers = async () => {
-    if (!confirm('Are you sure you want to delete all team members? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await fetch('/api/team/delete-all', {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) throw new Error('Failed to delete all team members');
-      
-      // Clear all states
-      setTeamMembers([]);
-      setPickedMembers([]);
-      setCurrentPick(null);
-      setCurrentEmojis(null);
-      setError('');
-    } catch (err) {
-      setError('Failed to delete all team members');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
