@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import TeamMembers from '@/components/TeamMembers';
 import MapGame from '@/components/MapGame';
+import EmojiGame from '@/components/EmojiGame';
 
-type MenuItem = 'team' | 'map';
+type MenuItem = 'team-members' | 'map-game' | 'emoji-game';
 
 export default function AdminPanel() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeMenuItem, setActiveMenuItem] = useState<MenuItem>('team');
+  const [activeMenuItem, setActiveMenuItem] = useState<MenuItem>('team-members');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -36,10 +37,11 @@ export default function AdminPanel() {
     return null;
   }
 
-  const menuItems = [
-    { id: 'team', label: 'Team Members' },
-    { id: 'map', label: 'Map Game' },
-  ] as const;
+  const menuItems: { id: MenuItem; label: string }[] = [
+    { id: 'team-members', label: 'Team Members' },
+    { id: 'map-game', label: 'Map Game' },
+    { id: 'emoji-game', label: 'Emoji Game' }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -71,10 +73,10 @@ export default function AdminPanel() {
                 <button
                   key={item.id}
                   onClick={() => setActiveMenuItem(item.id)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${
                     activeMenuItem === item.id
                       ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   {item.label}
@@ -85,8 +87,9 @@ export default function AdminPanel() {
 
           {/* Content */}
           <div className="mt-6">
-            {activeMenuItem === 'team' && <TeamMembers />}
-            {activeMenuItem === 'map' && <MapGame />}
+            {activeMenuItem === 'team-members' && <TeamMembers />}
+            {activeMenuItem === 'map-game' && <MapGame />}
+            {activeMenuItem === 'emoji-game' && <EmojiGame />}
           </div>
         </div>
       </div>
