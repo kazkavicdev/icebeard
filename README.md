@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Team Management App
 
-## Getting Started
+A Next.js application for managing team members with authentication and interactive games.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- User authentication (login/register)
+- Team member management (add, delete, toggle status)
+- Emoji Game for team interaction
+- Map Game for geographical team activities
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js 13+ with App Router
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- NextAuth.js for authentication
+- TailwindCSS for styling
+- React Leaflet for maps
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local Development
 
-## Learn More
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. Set up environment variables:
+   Create a `.env` file with:
+   ```
+   DATABASE_URL="postgresql://user:password@localhost:5432/your-db-name"
+   NEXTAUTH_SECRET="your-secret-key"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Set up the database:
+   ```bash
+   npx prisma migrate dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+## Deployment on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Create a [Vercel account](https://vercel.com/signup)
+2. Install Vercel CLI:
+   ```bash
+   npm i -g vercel
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Login to Vercel:
+   ```bash
+   vercel login
+   ```
+
+4. Deploy:
+   ```bash
+   vercel
+   ```
+
+5. Set up environment variables in Vercel:
+   - Go to your project settings
+   - Add the following environment variables:
+     - `DATABASE_URL` (Your production PostgreSQL URL)
+     - `NEXTAUTH_SECRET` (A secure random string)
+     - `NEXTAUTH_URL` (Your production URL)
+
+6. Set up a production database:
+   - Create a PostgreSQL database (recommended: [Vercel Postgres](https://vercel.com/storage/postgres))
+   - Update the `DATABASE_URL` in Vercel environment variables
+   - Run migrations:
+     ```bash
+     vercel env pull .env.production.local
+     npx prisma migrate deploy
+     ```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
