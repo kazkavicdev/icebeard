@@ -22,7 +22,10 @@ export default function AdminPanel() {
   }, [status, router]);
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true, callbackUrl: '/' });
+    await signOut({ 
+      redirect: true, 
+      callbackUrl: `${window.location.origin}/` 
+    });
   };
 
   if (status === 'loading') {

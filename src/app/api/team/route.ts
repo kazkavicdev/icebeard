@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
-// Get all team members
+// Get all team members for the current user
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -13,6 +13,9 @@ export async function GET() {
     }
 
     const teamMembers = await prisma.teamMember.findMany({
+      where: {
+        userId: session.user.id
+      },
       orderBy: {
         createdAt: 'desc'
       }
@@ -34,10 +37,13 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     
     if (!session) {
+      console.log('No session found:', session);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    console.log('Session user:', session.user);
     const { name, status } = await req.json();
+    console.log('Received data:', { name, status });
 
     if (!name || !status) {
       return NextResponse.json(
@@ -53,10 +59,19 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!session.user?.id) {
+      console.log('No user ID in session:', session);
+      return NextResponse.json(
+        { error: "User ID not found in session" },
+        { status: 400 }
+      );
+    }
+
     const teamMember = await prisma.teamMember.create({
       data: {
         name,
-        status
+        status,
+        userId: session.user.id
       }
     });
 
@@ -64,7 +79,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating team member:", error);
     return NextResponse.json(
-      { error: "Error creating team member" },
+      { error: error instanceof Error ? error.message : "Error creating team member" },
       { status: 500 }
     );
   }

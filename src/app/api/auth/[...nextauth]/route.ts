@@ -6,15 +6,13 @@ import { prisma } from "@/lib/prisma";
 
 declare module "next-auth" {
   interface User {
+    id: string;
     username: string;
+    email: string;
   }
   
   interface Session {
-    user: {
-      id: string;
-      email: string;
-      username: string;
-    }
+    user: User
   }
 }
 
@@ -22,6 +20,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     username: string;
+    email: string;
   }
 }
 
@@ -80,15 +79,24 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
         token.username = user.username;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.username = token.username;
+      if (!session.user) {
+        session.user = {
+          id: '',
+          email: '',
+          username: ''
+        };
       }
+      
+      session.user.id = token.id;
+      session.user.email = token.email;
+      session.user.username = token.username;
+
       return session;
     }
   },
