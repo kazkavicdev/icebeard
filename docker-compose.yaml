@@ -6,11 +6,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3001:3001"
     environment:
       - DATABASE_URL=file:/app/data/sqlite.db
       - NEXTAUTH_SECRET=your-nextauth-secret-key
       - NEXTAUTH_URL=http://localhost:3001
+      - PORT=3001
     volumes:
       - sqlite_data:/app/data
     restart: always
