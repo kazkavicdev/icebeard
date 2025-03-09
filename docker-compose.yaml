@@ -6,33 +6,14 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3002:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/nextjs_db?schema=public
+      - DATABASE_URL=file:/app/data/sqlite.db
       - NEXTAUTH_SECRET=your-nextauth-secret-key
       - NEXTAUTH_URL=http://localhost:3000
-    depends_on:
-      - db
-    restart: always
-    networks:
-      - app-network
-
-  db:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=nextjs_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - sqlite_data:/app/data
+    restart: always
 
 volumes:
-  postgres_data:
-
-networks:
-  app-network:
-    driver: bridge 
+  sqlite_data: 
