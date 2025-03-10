@@ -141,11 +141,19 @@ export default function MapGame() {
 
     const randomIndex = Math.floor(Math.random() * availableMembers.length);
     const coordinates = generateRandomCoordinates();
+    const selectedMember = availableMembers[randomIndex];
+    if (!selectedMember) {
+      setError('Failed to pick a team member');
+      return;
+    }
     
-    const pickedMember = {
-      ...availableMembers[randomIndex],
+    const pickedMember: TeamMember = {
+      id: selectedMember.id,
+      name: selectedMember.name,
+      status: selectedMember.status,
       coordinates,
-      isLoadingCountry: true
+      isLoadingCountry: true,
+      country: ''
     };
     
     setCurrentPick(pickedMember);

@@ -104,9 +104,17 @@ export default function EmojiGame() {
 
   const getRandomEmojis = () => {
     const sets = Object.keys(EMOJI_SETS) as (keyof typeof EMOJI_SETS)[];
-    const randomSet = sets[Math.floor(Math.random() * sets.length)];
-    const emojiSet = EMOJI_SETS[randomSet];
+    if (sets.length === 0) {
+      throw new Error('No emoji sets available');
+    }
     
+    const randomIndex = Math.floor(Math.random() * sets.length);
+    const randomSet = sets[randomIndex];
+    if (!randomSet) {
+      throw new Error('Failed to select random emoji set');
+    }
+    
+    const emojiSet = EMOJI_SETS[randomSet];
     const shuffled = [...emojiSet.emojis].sort(() => 0.5 - Math.random());
     return {
       question: emojiSet.question,
@@ -128,14 +136,25 @@ export default function EmojiGame() {
 
     const randomIndex = Math.floor(Math.random() * availableMembers.length);
     const pickedMember = availableMembers[randomIndex];
+    if (!pickedMember) {
+      setError('Failed to pick a team member');
+      return;
+    }
     
     setCurrentPick(pickedMember);
     setPickedMembers(prev => [...prev, pickedMember]);
-    setCurrentEmojis(getRandomEmojis());
-    setError('');
+    
+    try {
+      const newEmojis = getRandomEmojis();
+      setCurrentEmojis(newEmojis);
+      setError('');
+    } catch (err) {
+      setError('Failed to generate emoji set');
+      console.error(err);
+    }
   };
 
-  const resetPicks = () => {
+  const resetGame = () => {
     setPickedMembers([]);
     setCurrentPick(null);
     setCurrentEmojis(null);
@@ -156,7 +175,7 @@ export default function EmojiGame() {
           </button>
           {pickedMembers.length > 0 && (
             <button
-              onClick={resetPicks}
+              onClick={resetGame}
               className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
             >
               Reset
@@ -175,6 +194,11 @@ export default function EmojiGame() {
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           <div className="font-bold text-xl mb-2">
             {currentPick.name}
+            {pickedMembers.length < teamMembers.length && (
+              <span className="ml-2 text-sm font-normal">
+                ({pickedMembers.length} of {teamMembers.length} picked)
+              </span>
+            )}
           </div>
           <div className="text-lg mb-4">
             {currentEmojis.question}
@@ -187,22 +211,6 @@ export default function EmojiGame() {
               >
                 <div className="text-4xl mb-2">{emoji.emoji}</div>
                 <div className="text-sm text-gray-600">{emoji.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {pickedMembers.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-3">Previous Picks</h3>
-          <div className="space-y-2">
-            {pickedMembers.map((member, index) => (
-              <div 
-                key={member.id}
-                className="bg-gray-50 p-3 rounded-md"
-              >
-                {index + 1}. {member.name}
               </div>
             ))}
           </div>
