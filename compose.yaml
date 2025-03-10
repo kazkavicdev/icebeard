@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3001:3001"
     environment:
       - DATABASE_URL=file:/app/data/sqlite.db
       - NEXTAUTH_SECRET=your-nextauth-secret-key
