@@ -18,7 +18,7 @@ services:
       - "traefik.http.routers.chillbreaker.entrypoints=websecure"
       - "traefik.http.routers.chillbreaker.tls=true"
       - "traefik.http.routers.chillbreaker.tls.certresolver=letsencrypt"
-      - "traefik.http.services.chillbreaker.loadbalancer.server.port=80" 
+      - "traefik.http.services.chillbreaker.loadbalancer.server.port=3001" 
     volumes:
       - ./prisma:/app/data
     restart: always
