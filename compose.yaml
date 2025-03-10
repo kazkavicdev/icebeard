@@ -20,3 +20,6 @@ services:
     volumes:
       - ./prisma:/app/data
     restart: always
+networks:
+  traefik_default:
+    external: true
